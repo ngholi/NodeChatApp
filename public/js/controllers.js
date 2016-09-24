@@ -51,11 +51,25 @@ eplControllers.controller('AuthCtrl',['$scope','$location','$auth',
 		};
 }]);
 
-eplControllers.controller('HomeCtrl',['$scope','$location','$auth','$rootScope', '$state',
-	function($scope,$location,$auth,$rootScope, $state){
+eplControllers.controller('HomeCtrl',['$scope','$location','$auth','$rootScope', '$state', '$http',
+	function($scope,$location,$auth,$rootScope, $state, $http){
 
+	$scope.dataCenter = {
+		users: {},
+		rooms: {}
+	};
 	var payload = $auth.getPayload();
-	
+	$http.get('/users').then(function(res){
+			res.data.users.forEach(function(value){
+				$scope.dataCenter.users[value.id] = {
+					displayName: value.name,
+					email: value.email,
+					id: value.id,
+					avatarUrl: 'images/avatar.jpg'
+				}
+			}, $scope.dataCenter);
+		console.log($scope.dataCenter);
+	});
 	$rootScope.user = {
 		// id: payload.id,
 		id: 2,
@@ -84,7 +98,7 @@ eplControllers.controller('HomeCtrl',['$scope','$location','$auth','$rootScope',
 		}
 	};
 
-	$scope.dataCenter = fakeData;
+	//$scope.dataCenter = fakeData;
 	
 	$scope.cssAvatar = function(userID){
 		return 'background-image: url(' + $scope.dataCenter.users[userID].avatarUrl + ');';
